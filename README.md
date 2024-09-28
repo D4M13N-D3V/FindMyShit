@@ -39,7 +39,7 @@ When running this in your IDE on mac I always use Rider. I run into problems wit
     dotnet restore
     ```
 4. Install the binary from https://github.com/meilisearch/meilisearch/releases/tag/v1.10.2 into /PDT/meilisearch (meilisearch being the file name).
-
+5. Change line 33 on test.cs in the PDT.CLI project to the folder that you want to scan.
 ## Configuration
 1. Configure Meilisearch settings in `appsettings.json`:
     ```json

@@ -4,6 +4,7 @@ namespace PDT.Connectors.Shared.Model;
 
 public abstract class Folder : FileSystemObject
 { 
+    public const bool IsFolder = true;
     public IConnection Connection { get; set; }
     public IEnumerable<FileSystemObject> Children => GetChildren();
     public abstract IEnumerable<FileSystemObject> GetChildren();

@@ -4,13 +4,9 @@ namespace PDT.Connectors.LocalFileSystem;
 
 public class LocalFileSystemFolder:Folder
 {
-    public override IEnumerable<Document> GetDocuments()
+    public const bool Folder = true;
+    public override IEnumerable<FileSystemObject> GetChildren()
     {
-        return Connection.FetchDocuments(this);
-    }
-
-    public override IEnumerable<Folder> GetFolders()
-    {
-        return Connection.FetchFolders(this);
+        return Connection.Fetch(this);
     }
 }

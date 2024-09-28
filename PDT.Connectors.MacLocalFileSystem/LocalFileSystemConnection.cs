@@ -1,4 +1,5 @@
 ﻿using System.Security.AccessControl;
+using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Text.RegularExpressions;
 using MetadataExtractor;
@@ -72,7 +73,7 @@ public class LocalFileSystemConnection:IConnection
         input = Regex.Replace(input, @"[^a-z0-9]+", "-");
         return input;
     }
-    public IEnumerable<Document> FetchDocuments()
+    public IEnumerable<FileSystemObject> Fetch()
     {
         var targetFolder = Configurations.FirstOrDefault(x=>x.Key == "TargetFolder")?.Value ?? "C:\\";
         RootFolder = new LocalFileSystemFolder
@@ -82,11 +83,11 @@ public class LocalFileSystemConnection:IConnection
             UpdatedAtUtc = Directory.GetLastWriteTimeUtc(targetFolder),
             LastAccessedAtUtc = Directory.GetLastAccessTimeUtc(targetFolder)
         };
-        return FetchDocuments(RootFolder);
+        return Fetch(RootFolder);
     }
-    public IEnumerable<Document> FetchDocuments(Folder folder)
+    public IEnumerable<FileSystemObject> Fetch(Folder folder)
     {
-        var files = Directory.GetFiles(folder.Path, "*.*", SearchOption.AllDirectories);
+        var files = Directory.GetFiles(folder.Path, "*.*");
 
         foreach (var file in files)
         {
@@ -110,44 +111,16 @@ public class LocalFileSystemConnection:IConnection
         {
             var subFolder = new LocalFileSystemFolder
             {
+                Id = "folder-"+ToLowerAndReplaceSpecialChars(folderPath),
                 Path = folderPath,
+                Name = Path.GetDirectoryName(folderPath),
                 CreatedAtUtc = Directory.GetCreationTimeUtc(folderPath),
                 UpdatedAtUtc = Directory.GetLastWriteTimeUtc(folderPath),
                 LastAccessedAtUtc = Directory.GetLastAccessTimeUtc(folderPath),
             };
-            foreach (var document in FetchDocuments(subFolder))
+                yield return subFolder;
+            foreach (var document in Fetch(subFolder))
                 yield return document;
-        }
-    }
-    public IEnumerable<Folder> FetchFolders()
-    {
-        var targetFolder = Configurations.FirstOrDefault(x=>x.Key == "TargetFolder")?.Value ?? "C:\\";
-        RootFolder = new LocalFileSystemFolder
-        {
-            Path = targetFolder,
-            CreatedAtUtc = Directory.GetCreationTimeUtc(targetFolder),
-            UpdatedAtUtc = Directory.GetLastWriteTimeUtc(targetFolder),
-            LastAccessedAtUtc = Directory.GetLastAccessTimeUtc(targetFolder)
-        };
-        return FetchFolders(RootFolder);
-    }
-    public IEnumerable<Folder> FetchFolders(Folder folder)
-    {
-        var folders = Directory.GetDirectories(folder.Path, "*.*", SearchOption.AllDirectories);
-
-        foreach (var fldr in folders)
-        {
-            var directoryInfo = new DirectoryInfo(fldr);
-            var newFldr = new LocalFileSystemFolder()
-            {
-                Id = ToLowerAndReplaceSpecialChars(fldr),
-                Path = Path.GetDirectoryName(fldr),
-                Name = directoryInfo.Name,
-                CreatedAtUtc = File.GetCreationTimeUtc(fldr),
-                UpdatedAtUtc = File.GetLastWriteTimeUtc(fldr),
-                LastAccessedAtUtc = File.GetLastAccessTimeUtc(fldr),
-            };
-            yield return newFldr;
         }
     }
 

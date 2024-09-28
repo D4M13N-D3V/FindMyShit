@@ -16,8 +16,8 @@ public class MeilisearchService
     private readonly ILogger<MeilisearchService> _logger;
     private readonly MeilisearchClient _client;
     private readonly MeiliConfiguration _meiliConfiguration;
-    private ObservableCollection<KeyValuePair<string,Document>> _documentCollection;
-    private const int THRESHOLD = 1000; // Define your threshold here
+    private ObservableCollection<KeyValuePair<string,FileSystemObject>> _documentCollection;
+    private const int THRESHOLD = 10000; // Define your threshold here
 
     public MeilisearchService(HttpClient httpClient, ILogger<MeilisearchService> logger, MeiliConfiguration meiliConfiguration)
     {
@@ -27,7 +27,7 @@ public class MeilisearchService
         EnsureMeilisearchIsRunning();
         _client = new MeilisearchClient("http://localhost:"+meiliConfiguration.MeiliPort, "kToLWXAc2Qvm7yamYuBNE5DyYFka4koTo0ebGr7nBYo");
         EnsureRepositoryIndexExists();
-        _documentCollection = new ObservableCollection<KeyValuePair<string,Document>>();
+        _documentCollection = new ObservableCollection<KeyValuePair<string,FileSystemObject>>();
         _documentCollection.CollectionChanged += CheckIfNeedSync;
     }
 
@@ -161,6 +161,11 @@ public class MeilisearchService
     public void AddDocument(string repositoryId, Document document)
     {
         _logger.LogInformation($"Adding document '{document.Path}{document.FileName}.{document.FileName}' to repository '{repositoryId}'...");
-        _documentCollection.Add(new KeyValuePair<string, Document>(repositoryId, document));
+        _documentCollection.Add(new KeyValuePair<string, FileSystemObject>(repositoryId, document));
+    }
+    public void AddFolder(string repositoryId, Folder folder)
+    {
+        _logger.LogInformation($"Adding folder '{folder.Path}{folder.Name}' to repository '{repositoryId}'...");
+        _documentCollection.Add(new KeyValuePair<string, FileSystemObject>(repositoryId, folder));
     }
 }

@@ -8,10 +8,8 @@ public interface IConnection
     public string Name { get; set; }
     public string Id { get; set; }
     public Folder RootFolder { get; set; }
-    public IEnumerable<Document> FetchDocuments();
-    public IEnumerable<Document> FetchDocuments(Folder folder);
-    public IEnumerable<Folder> FetchFolders();
-    public IEnumerable<Folder> FetchFolders(Folder folder);
+    public IEnumerable<FileSystemObject> Fetch();
+    public IEnumerable<FileSystemObject> Fetch(Folder folder);
     // public Document FetchDocument(string documentId);
     // public Folder FetchFolder(string folderId);
     // public void AddDocument(Folder folder, Document document, Stream stream);

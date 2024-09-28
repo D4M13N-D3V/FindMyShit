@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using PDT.CLI.Services;
 using PDT.Connectors.LocalFileSystem;
 using PDT.Connectors.Shared.Interfaces;
@@ -11,8 +12,10 @@ public class test
     private readonly IConnection _connection;
     private readonly MeilisearchService _meilisearchService;
     private readonly TikaService _tikaService;
-    public test(MeilisearchService meilisearchService, TikaService tikaService)
+    private readonly ILogger<test> _logger;
+    public test(ILogger<test> logger,MeilisearchService meilisearchService, TikaService tikaService)
     {
+        _logger = logger;
         _tikaService = tikaService;
         _meilisearchService = meilisearchService;
 
@@ -27,7 +30,7 @@ public class test
                 new RepositoryConfiguration
                 {
                     Key = "TargetFolder",
-                    Value = "/Users/damienostler/Downloads"
+                    Value = "/Users/damienostler/Documents"
                 }
             }
         };
@@ -40,9 +43,20 @@ public class test
         _meilisearchService.AddRepository(repository);
         _meilisearchService.CreateIndex(repository.Id);
         
-        foreach (var file in _connection.FetchDocuments())
+        foreach (var obj in _connection.Fetch())
         {
-            _meilisearchService.AddDocument(repository.Id, file);
+            _logger.LogInformation($"Processing file {obj.Name}");
+            if(obj is Document document)
+            {
+                _logger.LogInformation($"Processing document {document.Name}");
+                _meilisearchService.AddDocument(repository.Id, document);
+            }
+            
+            if(obj is Folder folder)
+            {
+                _logger.LogInformation($"Processing folder {folder.Name}");
+                _meilisearchService.AddFolder(repository.Id, folder);
+            }
         }
     }
 

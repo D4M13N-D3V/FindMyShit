@@ -180,16 +180,16 @@
                         });
                     },
                     columns: [
-                        { data: 'path' },
-                        { data: 'name' },
-                        { data: 'ext' },
+                        { data: 'path' , width: '22%'},
+                        { data: 'name', width: '18%' },
+                        { data: 'ext', width: '3%' },
                         {
                             data: 'size', render: function (data, type, row) {
                                 if (type === 'display') {
                                     return formatBytes(data);
                                 }
                                 return data;
-                            }
+                            }, width: '5%'
                         },
                         {
                             data: 'createdAtUtc', render: function (data, type, row) {
@@ -200,7 +200,7 @@
                                     return `<span class="date" data-time="${time}" data-locale="${localeString}">${localeString}</span>`;
                                 }
                                 return data;
-                            }
+                            }, width: '12%'
                         },
                         {
                             data: 'updatedAtUtc', render: function (data, type, row) {
@@ -211,7 +211,7 @@
                                     return `<span class="date" data-time="${time}" data-locale="${localeString}">${localeString}</span>`;
                                 }
                                 return data;
-                            }
+                            }, width: '12%'
                         },
                         {
                             data: 'lastAccessedAtUtc', render: function (data, type, row) {
@@ -222,7 +222,7 @@
                                     return `<span class="date" data-time="${time}" data-locale="${localeString}">${localeString}</span>`;
                                 }
                                 return data;
-                            }
+                            }, width: '12%'
                         },
                         {
                             data: 'scannedAtUtc', render: function (data, type, row) {
@@ -233,7 +233,7 @@
                                     return `<span class="date" data-time="${time}" data-locale="${localeString}">${localeString}</span>`;
                                 }
                                 return data;
-                            }
+                            }, width: '12%'
                         }
                     ],
                     ajax: {

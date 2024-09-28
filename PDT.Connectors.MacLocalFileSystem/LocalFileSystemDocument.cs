@@ -4,6 +4,7 @@ namespace PDT.Connectors.LocalFileSystem;
 
 public class LocalFileSystemDocument : Document
 {
+    public override string Type => "Document";
     public override MemoryStream Open()
     {
         using (var stream = File.Open(Path, FileMode.Open, FileAccess.Read, FileShare.Read))

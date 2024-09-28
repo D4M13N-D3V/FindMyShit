@@ -8,4 +8,6 @@ public class LocalFileSystemFolder:Folder
     {
         return Connection.Fetch(this);
     }
+
+    public override string Type => "Folder";
 }

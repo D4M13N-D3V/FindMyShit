@@ -111,7 +111,7 @@ public class LocalFileSystemConnection:IConnection
         {
             var subFolder = new LocalFileSystemFolder
             {
-                Id = "folder-"+ToLowerAndReplaceSpecialChars(folderPath),
+                Id = ToLowerAndReplaceSpecialChars(folderPath),
                 Path = folderPath,
                 Name = Path.GetFileName(folderPath),
                 CreatedAtUtc = Directory.GetCreationTimeUtc(folderPath),

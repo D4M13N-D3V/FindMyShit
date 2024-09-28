@@ -23,18 +23,6 @@ public class LocalFileSystemConnection:IConnection
         _logger = logger;
     }
     
-    public IEnumerable<Document> FetchDocuments()
-    {
-        var targetFolder = Configurations.FirstOrDefault(x=>x.Key == "TargetFolder")?.Value ?? "C:\\";
-        RootFolder = new LocalFileSystemFolder
-        {
-            Path = targetFolder,
-            CreatedAtUtc = Directory.GetCreationTimeUtc(targetFolder),
-            UpdatedAtUtc = Directory.GetLastWriteTimeUtc(targetFolder),
-            LastAccessedAtUtc = Directory.GetLastAccessTimeUtc(targetFolder)
-        };
-        return FetchDocuments(RootFolder);
-    }
 
 
     private List<DocumentMetadataGroup> GetMetadata(LocalFileSystemDocument document)
@@ -84,6 +72,18 @@ public class LocalFileSystemConnection:IConnection
         input = Regex.Replace(input, @"[^a-z0-9]+", "-");
         return input;
     }
+    public IEnumerable<Document> FetchDocuments()
+    {
+        var targetFolder = Configurations.FirstOrDefault(x=>x.Key == "TargetFolder")?.Value ?? "C:\\";
+        RootFolder = new LocalFileSystemFolder
+        {
+            Path = targetFolder,
+            CreatedAtUtc = Directory.GetCreationTimeUtc(targetFolder),
+            UpdatedAtUtc = Directory.GetLastWriteTimeUtc(targetFolder),
+            LastAccessedAtUtc = Directory.GetLastAccessTimeUtc(targetFolder)
+        };
+        return FetchDocuments(RootFolder);
+    }
     public IEnumerable<Document> FetchDocuments(Folder folder)
     {
         var files = Directory.GetFiles(folder.Path, "*.*", SearchOption.AllDirectories);
@@ -119,6 +119,36 @@ public class LocalFileSystemConnection:IConnection
                 yield return document;
         }
     }
- 
+    public IEnumerable<Folder> FetchFolders()
+    {
+        var targetFolder = Configurations.FirstOrDefault(x=>x.Key == "TargetFolder")?.Value ?? "C:\\";
+        RootFolder = new LocalFileSystemFolder
+        {
+            Path = targetFolder,
+            CreatedAtUtc = Directory.GetCreationTimeUtc(targetFolder),
+            UpdatedAtUtc = Directory.GetLastWriteTimeUtc(targetFolder),
+            LastAccessedAtUtc = Directory.GetLastAccessTimeUtc(targetFolder)
+        };
+        return FetchFolders(RootFolder);
+    }
+    public IEnumerable<Folder> FetchFolders(Folder folder)
+    {
+        var folders = Directory.GetDirectories(folder.Path, "*.*", SearchOption.AllDirectories);
+
+        foreach (var fldr in folders)
+        {
+            var directoryInfo = new DirectoryInfo(fldr);
+            var newFldr = new LocalFileSystemFolder()
+            {
+                Id = ToLowerAndReplaceSpecialChars(fldr),
+                Path = Path.GetDirectoryName(fldr),
+                Name = directoryInfo.Name,
+                CreatedAtUtc = File.GetCreationTimeUtc(fldr),
+                UpdatedAtUtc = File.GetLastWriteTimeUtc(fldr),
+                LastAccessedAtUtc = File.GetLastAccessTimeUtc(fldr),
+            };
+            yield return newFldr;
+        }
+    }
 
 }

@@ -160,12 +160,12 @@ public class MeilisearchService
     
     public void AddDocument(string repositoryId, Document document)
     {
-        _logger.LogInformation($"Adding document '{document.Path}{document.FileName}.{document.FileName}' to repository '{repositoryId}'...");
+        _logger.LogTrace($"Adding document '{document.Path}{document.Name}.{document.Extension}' to repository '{repositoryId}'...");
         _documentCollection.Add(new KeyValuePair<string, FileSystemObject>(repositoryId, document));
     }
     public void AddFolder(string repositoryId, Folder folder)
     {
-        _logger.LogInformation($"Adding folder '{folder.Path}{folder.Name}' to repository '{repositoryId}'...");
+        _logger.LogTrace($"Adding folder '{folder.Path}{folder.Name}' to repository '{repositoryId}'...");
         _documentCollection.Add(new KeyValuePair<string, FileSystemObject>(repositoryId, folder));
     }
 }

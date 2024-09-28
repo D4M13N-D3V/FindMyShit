@@ -45,16 +45,15 @@ public class test
         
         foreach (var obj in _connection.Fetch())
         {
-            _logger.LogInformation($"Processing file {obj.Name}");
             if(obj is Document document)
             {
-                _logger.LogInformation($"Processing document {document.Name}");
+                _logger.LogTrace($"Processing document {document.Name}");
                 _meilisearchService.AddDocument(repository.Id, document);
             }
             
             if(obj is Folder folder)
             {
-                _logger.LogInformation($"Processing folder {folder.Name}");
+                _logger.LogTrace($"Processing folder {folder.Name}");
                 _meilisearchService.AddFolder(repository.Id, folder);
             }
         }

@@ -62,7 +62,7 @@ public class LocalFileSystemConnection:IConnection
         }
         catch (Exception e)
         {
-            _logger?.LogError(e,$"Could not retrieve the metadata for the document. {document.Path} {document.FileName}");
+            _logger?.LogError(e,$"Could not retrieve the metadata for the document. {document.Path} {document.Name}");
         }
         return result;
     }

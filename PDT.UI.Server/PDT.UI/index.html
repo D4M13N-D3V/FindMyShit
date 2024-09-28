@@ -45,6 +45,10 @@
     <div class="w-full mx-auto bg-white shadow-md p-8 pt-16">
         <div class="flex flex-row items-center">
             <h1 class="text-2xl font-bold mb-6 flex-grow">Document Query Menu</h1>
+            <div id="liveness-badge" class="p-2 rounded-full text-center bg-orange-500" hx-get="http://localhost:7700" hx-trigger="every 5s" hx-swap="innerText">
+                Checking...
+            </div>
+            
             <button id="filter-popup-button" type="button" style="z-index: 500"
                 class="px-4 mb-4 mr-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">(Esc) Query Syntax</button>
             <select id="indexSelect" name="indexSelect" class="border p-2 w-2/8 mb-4">
@@ -54,7 +58,7 @@
 
         <!-- Form to submit -->
         <div class="form-group">
-            <input class="form-control border p-2 w-full mb-4" type="search" name="filter" id="filter"
+            <input class="form-control border p-2 w-full mb-4" disabled type="search" name="filter" id="filter"
                 placeholder="Begin typing to start your query...">
         </div>
 
@@ -90,6 +94,18 @@
     <script>
         window.onload = function () {
 
+            document.body.addEventListener('htmx:afterOnLoad', function (event) {
+                    var target = event.detail.elt;
+                    if (target.id === 'liveness-badge') {
+                        if (event.detail.xhr.status === 200) {
+                            target.className = 'p-2 rounded-full text-white text-sm bg-green-500';
+                            target.textContent = 'Index Database is up';
+                        } else {
+                            target.className = 'p-2 rounded-full text-white text-sm bg-red-500';
+                            target.textContent = 'Index Database is down';
+                        }
+                    }
+                });
 
 
             document.addEventListener('keydown', function (event) {
@@ -276,6 +292,7 @@
                     table.search($(this).val()).draw();
                 });
                 htmx.process(searchInput);
+                $("#filter").prop('disabled', false);
             });
         }
     </script>

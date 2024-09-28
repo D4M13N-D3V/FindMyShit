@@ -41,22 +41,20 @@ When running this in your IDE on mac I always use Rider. I run into problems wit
 4. Install the binary from https://github.com/meilisearch/meilisearch/releases/tag/v1.10.2 into /PDT/meilisearch (meilisearch being the file name).
 5. Change line 33 on test.cs in the PDT.CLI project to the folder that you want to scan.
 ## Configuration
-1. Configure Meilisearch settings in `appsettings.json`:
-    ```json
-    {
-      "MeiliConfiguration": {
-        "MeiliRepositoryIndex": "your-repository-index"
-      }
-    }
-    ```
-2. Configure Tika settings in `appsettings.json`:
-    ```json
-    {
-      "TikaConfiguration": {
-        "TikaThreadPoolSize": 5
-      }
-    }
-    ```
+This goes in your appsettings.json. The names are self documenting.
+```
+...
+  "PDT": {
+    "MeiliPort": 7700,
+    "DockerHealthCheckInterval": 60000,
+    "MeiliImage": "getmeili/meilisearch:v1.10",
+    "DockerSocket": "unix:///var/run/docker.sock",
+    "DockerContainerName": "pdt-meili-search",
+    "MeiliRepositoryIndexName": "pdt",
+    "TikaThreadPoolSize": 10
+  },
+...
+```
 
 ## Logging
 The application uses `Microsoft.Extensions.Logging` for logging. Configure the logging settings in `appsettings.json` as needed.

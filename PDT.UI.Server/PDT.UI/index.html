@@ -5,42 +5,48 @@
 
     <script src="https://unpkg.com/htmx.org@1.9.12/dist/htmx.min.js"></script>
 </head>
+
 <body class="bg-gray-100 p-10 grid grid-cols-1 gap-6">
     <!-- HTMX Popup for Meilisearch Filter Syntax -->
-    <div id="filter-popup" style="z-index: 500;" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-20 h-full w-full hidden">
-    <div class="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
-      <h2 class="text-xl font-bold mb-4">Filter Syntax</h2>
-      <div class="text-sm space-y-2">
-        <!-- Equal to -->
-        <p><strong>=</strong> Equal to: <code>path = '/path/to/file'</code></p>
-        
-        <!-- Not equal -->
-        <p><strong>!=</strong> Not equal to: <code>extension != 'pdf'</code></p>
-        
-        <!-- Greater than / Less than -->
-        <p><strong>></strong> Greater than: <code>size > 100</code></p>
-        <p><strong><</strong> Less than: <code>created < '2022-01-01'</code></p>
-        <p><strong>>=</strong> Greater than or equal to: <code>updated >= '2022-01-01 00:00:00'</code></p>
-        <p><strong><=</strong> Less than or equal to: <code>scanned <= '2022-01-31'</code></p>
-        
-        <!-- Range -->
-        <p><strong>[A TO B]</strong> Range: <code>size [10 TO 100]</code></p>
-        
-        <!-- Logical AND / OR -->
-        <p><strong>AND</strong> Combine multiple conditions: <code>extension = 'jpg' AND size > 500</code></p>
-        <p><strong>OR</strong> Either condition: <code>extension = 'png' OR extension = 'gif'</code></p>
-        
-        <!-- Grouping with parentheses -->
-        <p><strong>Parentheses</strong> Group filters: <code>(extension = 'pdf' OR extension = 'doc') AND size < 500</code></p>
-          </div>
-      <!-- Close Button -->
+    <div id="filter-popup" style="z-index: 500;"
+        class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-20 h-full w-full hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
+            <h2 class="text-xl font-bold mb-4">Filter Syntax</h2>
+            <div class="text-sm space-y-2">
+                <!-- Equal to -->
+                <p><strong>=</strong> Equal to: <code>path = '/path/to/file'</code></p>
+
+                <!-- Not equal -->
+                <p><strong>!=</strong> Not equal to: <code>extension != 'pdf'</code></p>
+
+                <!-- Greater than / Less than -->
+                <p><strong>></strong> Greater than: <code>size > 100</code></p>
+                <p><strong>
+                        << /strong> Less than: <code>created < '2022-01-01'</code></p>
+                <p><strong>>=</strong> Greater than or equal to: <code>updated >= '2022-01-01 00:00:00'</code></p>
+                <p><strong>
+                        <=< /strong> Less than or equal to: <code>scanned <= '2022-01-31'</code></p>
+
+                <!-- Range -->
+                <p><strong>[A TO B]</strong> Range: <code>size [10 TO 100]</code></p>
+
+                <!-- Logical AND / OR -->
+                <p><strong>AND</strong> Combine multiple conditions: <code>extension = 'jpg' AND size > 500</code></p>
+                <p><strong>OR</strong> Either condition: <code>extension = 'png' OR extension = 'gif'</code></p>
+
+                <!-- Grouping with parentheses -->
+                <p><strong>Parentheses</strong> Group filters:
+                    <code>(extension = 'pdf' OR extension = 'doc') AND size < 500</code></p>
+            </div>
+            <!-- Close Button -->
+        </div>
     </div>
-  </div>
 
     <div class="w-full mx-auto bg-white shadow-md p-8">
         <div class="flex flex-row items-center">
             <h1 class="text-2xl font-bold mb-6 flex-grow">Document Query Menu</h1>
-            <button id="filter-popup-button" type="button" style="z-index: 500" class="px-4 mb-4 mr-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600" >(Esc) Query Syntax</button>
+            <button id="filter-popup-button" type="button" style="z-index: 500"
+                class="px-4 mb-4 mr-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">(Esc) Query Syntax</button>
             <select id="indexSelect" name="indexSelect" class="border p-2 w-2/8 mb-4">
                 <option value="" disabled selected>Select an Repository</option>
             </select>
@@ -48,10 +54,10 @@
 
         <!-- Form to submit -->
         <div class="form-group">
-            <input class="form-control border p-2 w-full mb-4" type="search" 
-                   name="filter" id="filter" placeholder="Begin typing to start your query..." >
+            <input class="form-control border p-2 w-full mb-4" type="search" name="filter" id="filter"
+                placeholder="Begin typing to start your query...">
         </div>
-        
+
 
         <table class="table-auto w-full" id="search-results" name="search-results">
             <thead>
@@ -66,45 +72,46 @@
                     <th class="px-4 py-2">Scanned</th>
                 </tr>
             </thead>
-            <tbody  >
+            <tbody>
             </tbody>
         </table>
-    
-        </div>
-        
-        <div class="htmx-indicator">
-            Loading...
-        </div>
 
     </div>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+    <div class="htmx-indicator">
+        Loading...
+    </div>
+
+    </div>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="https://cdn.datatables.net/2.1.7/js/dataTables.js"></script>
     <script src="https://unpkg.com/htmx.org@1.9.12/dist/htmx.min.js"></script>
     <script>
-        window.onload = function() {
+        window.onload = function () {
 
 
 
-        document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-        togglePopup();
-    }
-});
-    function togglePopup() {
-        const popup = document.getElementById('filter-popup');
-        popup.classList.toggle('hidden');
-    }
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape') {
+                    togglePopup();
+                }
+            });
+            function togglePopup() {
+                const popup = document.getElementById('filter-popup');
+                popup.classList.toggle('hidden');
+            }
 
-    $("#filter-popup-button").click(function() {
-        togglePopup();
-    });
+            $("#filter-popup-button").click(function () {
+                togglePopup();
+            });
 
-    document.getElementById('indexSelect').addEventListener('change', function() {
-            const selectValue = this.value;
-            const searchInput = document.getElementById('filter');
-            searchInput.setAttribute('hx-get', `http://localhost:7700/indexes/${selectValue}/documents`);
-            htmx.process(searchInput);
-        });
+            document.getElementById('indexSelect').addEventListener('change', function () {
+                const selectValue = this.value;
+                const searchInput = document.getElementById('filter');
+                searchInput.setAttribute('hx-get', `http://localhost:7700/indexes/${selectValue}/documents`);
+                htmx.process(searchInput);
+            });
 
 
             fetch('http://localhost:7700/indexes', {
@@ -112,30 +119,41 @@
                     'Authorization': 'Bearer kToLWXAc2Qvm7yamYuBNE5DyYFka4koTo0ebGr7nBYo'
                 }
             })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data)
-                const select = document.getElementById('indexSelect');
-                data.results.forEach(index => {
-                    if (index.uid !== 'pdt') {
-                        
-                        const option = document.createElement('option');
-                        option.value = index.uid;
-                        option.text = index.uid;
-                        select.add(option);
-                    }
-                });
-            });
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data)
+                    const select = document.getElementById('indexSelect');
+                    data.results.forEach(index => {
+                        if (index.uid !== 'pdt') {
 
-// Trigger the search function when the search input changes
-function ticksToDate(ticks) {
-    // Ticks are the number of 100-nanosecond intervals since January 1, 0001 00:00:00 UTC
-    // Subtract the ticks for the Unix epoch, then convert to milliseconds
-    var ticksSinceEpoch = ticks - 621355968000000000;
-    var msSinceEpoch = ticksSinceEpoch / 10000;
-    return new Date(msSinceEpoch);
-}
-            document.getElementById('indexSelect').addEventListener('change', function() {
+                            const option = document.createElement('option');
+                            option.value = index.uid;
+                            option.text = index.uid;
+                            select.add(option);
+                        }
+                    });
+                });
+            function formatBytes(bytes, decimals = 2) {
+                if (bytes === 0) return '0 Bytes';
+
+                const k = 1024;
+                const dm = decimals < 0 ? 0 : decimals;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+            }
+
+            // Trigger the search function when the search input changes
+            function ticksToDate(ticks) {
+                // Ticks are the number of 100-nanosecond intervals since January 1, 0001 00:00:00 UTC
+                // Subtract the ticks for the Unix epoch, then convert to milliseconds
+                var ticksSinceEpoch = ticks - 621355968000000000;
+                var msSinceEpoch = ticksSinceEpoch / 10000;
+                return new Date(msSinceEpoch);
+            }
+            document.getElementById('indexSelect').addEventListener('change', function () {
                 const selectValue = this.value;
                 const searchInput = document.getElementById('filter');
                 searchInput.setAttribute('hx-get', `http://localhost:7700/indexes/${selectValue}/documents`);
@@ -143,77 +161,92 @@ function ticksToDate(ticks) {
                     processing: true,
                     serverSide: true,
                     searching: false,
-                    drawCallback: function(settings) {
+                    drawCallback: function (settings) {
 
-                        document.querySelectorAll('.date').forEach(function(element) {
-                                console.log("asdfdasfasdfasd")
-                            element.addEventListener('mouseover', function() {
+                        document.querySelectorAll('.date').forEach(function (element) {
+                            console.log("asdfdasfasdfasd")
+                            element.addEventListener('mouseover', function () {
                                 console.log("asdfdasfasdfasd")
                                 const time = this.getAttribute('data-time');
                                 const locale = this.getAttribute('data-locale');
                                 this.setAttribute('title', this.textContent);
                                 this.textContent = time;
                             });
-                            element.addEventListener('mouseout', function() {
+                            element.addEventListener('mouseout', function () {
                                 console.log("TESTESTSETSET")
                                 const locale = this.getAttribute('data-locale');
                                 this.textContent = locale;
                             });
                         });
                     },
-                    columns:[
-                        {data: 'path'},
-                        {data: 'name'},
-                        {data: 'ext'},
-                        {data: 'size'},
-                        {data: 'createdAtUtc', render: function(data, type, row) {
-                            if (type === 'display') {
-                                const date = ticksToDate(data);
-                                const time = date.getTime();
-                                const localeString = date.toLocaleString();
-                                return `<span class="date" data-time="${time}" data-locale="${localeString}">${localeString}</span>`;
+                    columns: [
+                        { data: 'path' },
+                        { data: 'name' },
+                        { data: 'ext' },
+                        {
+                            data: 'size', render: function (data, type, row) {
+                                if (type === 'display') {
+                                    return formatBytes(data);
+                                }
+                                return data;
                             }
-                            return data;
-                        }},
-                        {data: 'updatedAtUtc', render: function(data, type, row) {
-                            if (type === 'display') {
-                                const date = ticksToDate(data);
-                                const time = date.getTime();
-                                const localeString = date.toLocaleString();
-                                return `<span class="date" data-time="${time}" data-locale="${localeString}">${localeString}</span>`;
+                        },
+                        {
+                            data: 'createdAtUtc', render: function (data, type, row) {
+                                if (type === 'display') {
+                                    const date = ticksToDate(data);
+                                    const time = date.getTime();
+                                    const localeString = date.toLocaleString();
+                                    return `<span class="date" data-time="${time}" data-locale="${localeString}">${localeString}</span>`;
+                                }
+                                return data;
                             }
-                            return data;
-                        }},
-                        {data: 'lastAccessedAtUtc', render: function(data, type, row) {
-                            if (type === 'display') {
-                                const date = ticksToDate(data);
-                                const time = date.getTime();
-                                const localeString = date.toLocaleString();
-                                return `<span class="date" data-time="${time}" data-locale="${localeString}">${localeString}</span>`;
+                        },
+                        {
+                            data: 'updatedAtUtc', render: function (data, type, row) {
+                                if (type === 'display') {
+                                    const date = ticksToDate(data);
+                                    const time = date.getTime();
+                                    const localeString = date.toLocaleString();
+                                    return `<span class="date" data-time="${time}" data-locale="${localeString}">${localeString}</span>`;
+                                }
+                                return data;
                             }
-                            return data;
-                        }},
-                        {data: 'scannedAtUtc', render: function(data, type, row) {
-                            if (type === 'display') {
-                                const date = ticksToDate(data);
-                                const time = date.getTime();
-                                const localeString = date.toLocaleString();
-                                return `<span class="date" data-time="${time}" data-locale="${localeString}">${localeString}</span>`;
+                        },
+                        {
+                            data: 'lastAccessedAtUtc', render: function (data, type, row) {
+                                if (type === 'display') {
+                                    const date = ticksToDate(data);
+                                    const time = date.getTime();
+                                    const localeString = date.toLocaleString();
+                                    return `<span class="date" data-time="${time}" data-locale="${localeString}">${localeString}</span>`;
+                                }
+                                return data;
                             }
-                            return data;
-                        }}
+                        },
+                        {
+                            data: 'scannedAtUtc', render: function (data, type, row) {
+                                if (type === 'display') {
+                                    const date = ticksToDate(data);
+                                    const time = date.getTime();
+                                    const localeString = date.toLocaleString();
+                                    return `<span class="date" data-time="${time}" data-locale="${localeString}">${localeString}</span>`;
+                                }
+                                return data;
+                            }
+                        }
                     ],
                     ajax: {
-                        cache:true,
+                        cache: true,
                         url: "http://localhost:7700/indexes/" + document.getElementById('indexSelect').value + "/documents",
                         type: "GET",
-                        dataSrc: function(json){
+                        dataSrc: function (json) {
                             json.recordsTotal = json.total;
                             json.recordsFiltered = json.total;
                             searchInput.style.outline = '2px solid green';
                             return json.results;
                         },
-                        
+
                         error: function (xhr, textStatus, errorThrown) {
                             // Handle API call error
                             searchInput.style.outline = '2px solid red';
@@ -222,19 +255,19 @@ function ticksToDate(ticks) {
                         headers: { 'Authorization': 'Bearer kToLWXAc2Qvm7yamYuBNE5DyYFka4koTo0ebGr7nBYo' },
                         data: function (d) {
                             // Modify the url to include offset and limit as query parameters
-                            return {offset: d.start, limit: d.length, filter: searchInput.value};
+                            return { offset: d.start, limit: d.length, filter: searchInput.value };
                         }
                     },
-                initComplete: function(settings, json) {
-                    table.page.info().recordsTotal = json.total;
-                }
-            });
-            $('#filter').on('keyup', function() {
-            table.search($(this).val()).draw() ;
-        });
+                    initComplete: function (settings, json) {
+                        table.page.info().recordsTotal = json.total;
+                    }
+                });
+                $('#filter').on('keyup', function () {
+                    table.search($(this).val()).draw();
+                });
                 htmx.process(searchInput);
-        });
-      }
+            });
+        }
     </script>
     </div>
 

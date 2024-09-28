@@ -70,3 +70,74 @@ The application uses `Microsoft.Extensions.Logging` for logging. Configure the l
 
 ## License
 This project is licensed under the MIT License. See the `LICENSE` file for details.
+
+
+Here's the updated roadmap with document tagging and migrations:
+
+---
+
+## Feature Roadmap
+
+### Index Management
+- **[ ] Mount/Unmount Indexes:**
+  Implement a feature to compress and decompress indexes for storage efficiency. This will allow indexes to be preserved without deletion, though the process may take time.
+
+- **[ ] Export/Import Indexes:**
+  Provide the ability to export indexes to an external location and re-import them as needed.
+
+- **[ ] Delete Repositories & Indexes:**
+  Allow users to delete repositories and automatically remove their associated indexes.
+
+---
+
+### Document Management
+- **[ ] Document Tagging:**
+  Add support for tagging documents for better organization, searchability, and categorization across repositories.
+
+- **[ ] Document Migrations:**
+  Implement a migration system for moving documents between repositories, ensuring metadata and indexes are preserved.
+
+---
+
+### Monitoring & Performance
+- **[ ] Resource Monitoring:**
+  Add real-time monitoring for CPU, memory, network usage, and database size to ensure performance and system health.
+
+---
+
+### Search & Navigation
+- **[ ] Search with Autocomplete:**
+  Implement a search feature with autocomplete functionality to assist users in finding specific fields more easily.
+
+- **[ ] File System Search UI:**
+  Build a user-friendly file system interface for viewing and searching files across multiple repositories.
+
+---
+
+### Onboarding & Integration
+- **[ ] Easy Onboarding:**
+  Streamline the onboarding process with support for popular file systems and platforms:
+  - Windows Local File System
+  - Mac Local File System
+  - Linux Local File System
+  - Google Drive
+  - Dropbox
+  - OneDrive
+  - Discord
+  - Pixlr
+
+---
+
+### Security
+- **[ ] Recovery Code System:**
+  Implement a secure recovery code system for logging in and generating API keys, providing an extra layer of protection for user data.
+
+---
+
+### Text Content Indexing
+- **[ ] Optional Text Indexing (High Resource Usage):**
+  Add the ability to enable/disable text content indexing via Apache Tika, including OCR for searching the content of files. Note: This feature may consume significant resources.
+
+---
+
+Feel free to contribute or suggest new features!

@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PDT.Connectors.Shared", "PD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PDT.Connectors.MacLocalFileSystem", "PDT.Connectors.MacLocalFileSystem\PDT.Connectors.MacLocalFileSystem.csproj", "{46A992D5-7246-45BA-87F4-75C75DC4265E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PDT.MVC", "PDT.MVC\PDT.MVC.csproj", "{A4BE2317-1789-4625-8D9F-8A9966B0FD17}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{46A992D5-7246-45BA-87F4-75C75DC4265E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{46A992D5-7246-45BA-87F4-75C75DC4265E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{46A992D5-7246-45BA-87F4-75C75DC4265E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4BE2317-1789-4625-8D9F-8A9966B0FD17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4BE2317-1789-4625-8D9F-8A9966B0FD17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4BE2317-1789-4625-8D9F-8A9966B0FD17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4BE2317-1789-4625-8D9F-8A9966B0FD17}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{FE23F69D-5DA2-4751-9252-D4018D236920} = {9145A442-3022-4D6B-B3A2-F2D5E887DE84}

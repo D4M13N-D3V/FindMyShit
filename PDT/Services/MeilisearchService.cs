@@ -14,7 +14,7 @@ public class MeilisearchService
 {
     private readonly HttpClient _httpClient;
     private readonly ILogger<MeilisearchService> _logger;
-    private readonly MeilisearchClient _client;
+    public readonly MeilisearchClient Client;
     private readonly MeiliConfiguration _meiliConfiguration;
     private ObservableCollection<KeyValuePair<string,FileSystemObject>> _documentCollection;
     private const int THRESHOLD = 10000; // Define your threshold here
@@ -25,7 +25,7 @@ public class MeilisearchService
         _meiliConfiguration = meiliConfiguration;
         _logger = logger;
         EnsureMeilisearchIsRunning();
-        _client = new MeilisearchClient("http://localhost:"+meiliConfiguration.MeiliPort, "kToLWXAc2Qvm7yamYuBNE5DyYFka4koTo0ebGr7nBYo");
+        Client = new MeilisearchClient("http://localhost:"+meiliConfiguration.MeiliPort, "kToLWXAc2Qvm7yamYuBNE5DyYFka4koTo0ebGr7nBYo");
         EnsureRepositoryIndexExists();
         _documentCollection = new ObservableCollection<KeyValuePair<string,FileSystemObject>>();
         _documentCollection.CollectionChanged += CheckIfNeedSync;
@@ -46,7 +46,7 @@ public class MeilisearchService
     private async Task StartMeilisearch()
     {
         
-        if (!File.Exists("meilisearch"))
+        if (!File.Exists(Path.Combine(AppContext.BaseDirectory, "meilisearch")))
         {
             _logger.LogError("Meilisearch binary not found at root");
             return;
@@ -82,7 +82,7 @@ public class MeilisearchService
                 .ToDictionary(group => group.Key, group => group.Select(pair => pair.Value).ToList());
             foreach (var repository in grouped)
             {
-                var repositoryIndex = _client.GetIndexAsync(repository.Key).Result;
+                var repositoryIndex = Client.GetIndexAsync(repository.Key).Result;
                 var documents = _documentCollection.ToList();
                 _documentCollection.Clear();
                 var result = repositoryIndex.AddDocumentsAsync(repository.Value, "id").Result;
@@ -92,31 +92,47 @@ public class MeilisearchService
     
     private async void EnsureRepositoryIndexExists()
     {
-
-        var indexes = _client.GetAllIndexesAsync().Result;
+        Task.Delay(5000).Wait();
+        var indexes = Client.GetAllIndexesAsync().Result;
         if (indexes.Results.Any(x => x.Uid == _meiliConfiguration.MeiliRepositoryIndex))
         {
             _logger.LogInformation("Repository index already exists, skipping creation of index.");
             return;
         }
         _logger.LogInformation("Creating Repository index for application to store documents...");
-        _client.CreateIndexAsync(_meiliConfiguration.MeiliRepositoryIndex).Wait();
+        Client.CreateIndexAsync(_meiliConfiguration.MeiliRepositoryIndex).Wait();
     }
-
+    
+    private readonly List<string> FIELDS = new List<string>
+    {
+        "ID",
+        "PATH",
+        "CREATEDATUTC",
+        "UPDATEDATUTC",
+        "LASTACCESSEDATUTC",
+        "NAME",
+        "TYPE"
+    };
+    
     /// <summary>
     /// Creates a new index on the Meilisearch server if it does not already exist.
     /// </summary>
     /// <param name="indexName">The name for the new index.</param>
     public void CreateIndex(string indexName)
     {
-        var indexes = _client.GetAllIndexesAsync().Result;
+        var indexes = Client.GetAllIndexesAsync().Result;
         if (indexes.Results.Any(x => x.Uid == indexName))
         {
             _logger.LogInformation($"Index '{indexName}' already exists, skipping creation of index.");
             return;
         }
         _logger.LogInformation($"Creating index '{indexName}'...");
-        _client.CreateIndexAsync(indexName).Wait();
+        Client.CreateIndexAsync(indexName).Wait();
+        Task.Delay(5000).Wait();
+        var index = Client.GetIndexAsync(indexName).Result;
+        var test = index.GetFilterableAttributesAsync().Result;
+        index.UpdateFilterableAttributesAsync(FIELDS).Wait();
+        index.UpdateFilterableAttributesAsync(FIELDS.Select(x=>x.ToLower())).Wait();
     }
 
     /// <summary>
@@ -127,7 +143,7 @@ public class MeilisearchService
     public void AddRepository(Repository repository)
     {
         _logger.LogInformation($"Adding repository '{repository.Name}' to the repository index...");
-        var repositoryIndex = _client.GetIndexAsync(_meiliConfiguration.MeiliRepositoryIndex).Result;
+        var repositoryIndex = Client.GetIndexAsync(_meiliConfiguration.MeiliRepositoryIndex).Result;
         repositoryIndex.AddDocumentsAsync(new List<Repository> { repository }).Wait();
     }
 
@@ -138,7 +154,7 @@ public class MeilisearchService
     public void RemoveRepository(Repository repository)
     {
         _logger.LogInformation($"Removing repository '{repository.Name}' to the repository index...");
-        var repositoryIndex = _client.GetIndexAsync(_meiliConfiguration.MeiliRepositoryIndex).Result;
+        var repositoryIndex = Client.GetIndexAsync(_meiliConfiguration.MeiliRepositoryIndex).Result;
         repositoryIndex.DeleteOneDocumentAsync(repository.Id).Wait();
     }
 
@@ -148,24 +164,29 @@ public class MeilisearchService
     /// <param name="indexName">The name of the index.</param>
     public void DeleteIndex(string indexName)
     {
-        var indexes = _client.GetAllIndexesAsync().Result;
+        var indexes = Client.GetAllIndexesAsync().Result;
         if (indexes.Results.Any(x => x.Uid != indexName))
         {
             _logger.LogInformation($"Index '{indexName}' does not exist, skipping deletion of index.");
             return;
         }
         _logger.LogInformation($"Deleting index '{indexName}'...");
-        _client.DeleteIndexAsync(indexName).Wait();
+        Client.DeleteIndexAsync(indexName).Wait();
     }
     
     public void AddDocument(string repositoryId, Document document)
     {
-        _logger.LogTrace($"Adding document '{document.Path}{document.Name}.{document.Extension}' to repository '{repositoryId}'...");
+        _logger.LogTrace($"Adding document '{document.Path}{document.Name}.{document.Ext}' to repository '{repositoryId}'...");
         _documentCollection.Add(new KeyValuePair<string, FileSystemObject>(repositoryId, document));
     }
     public void AddFolder(string repositoryId, Folder folder)
     {
         _logger.LogTrace($"Adding folder '{folder.Path}{folder.Name}' to repository '{repositoryId}'...");
         _documentCollection.Add(new KeyValuePair<string, FileSystemObject>(repositoryId, folder));
+    }
+
+    public List<string> GetAllIndexes()
+    {
+        return Client.GetAllIndexesAsync().Result.Results.Select(x => x.Uid).Where(x=>x!=_meiliConfiguration.MeiliRepositoryIndex).ToList();
     }
 }

@@ -7,7 +7,8 @@ public abstract class Document:FileSystemObject
 {
     [JsonIgnore]
     public IConnection Connection { get; set; }
-    public string Extension { get; set; } = string.Empty;
+    
+    public string Ext { get; set; } = string.Empty;
     public long Size { get; set; }
     public List<string> Tags { get; set; } = new List<string>();
     

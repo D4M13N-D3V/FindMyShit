@@ -54,6 +54,7 @@ public class LocalFileSystemConnection:IConnection
                             StringValue = tag?.Description,
                             Values =null,
                             StringValues = null,
+                            
                         });
                     }
                     result.Add(group);
@@ -81,7 +82,8 @@ public class LocalFileSystemConnection:IConnection
             Path = targetFolder,
             CreatedAtUtc = Directory.GetCreationTimeUtc(targetFolder),
             UpdatedAtUtc = Directory.GetLastWriteTimeUtc(targetFolder),
-            LastAccessedAtUtc = Directory.GetLastAccessTimeUtc(targetFolder)
+            LastAccessedAtUtc = Directory.GetLastAccessTimeUtc(targetFolder),
+            ScannedAtUtc = DateTime.UtcNow
         };
         return Fetch(RootFolder);
     }
@@ -96,11 +98,12 @@ public class LocalFileSystemConnection:IConnection
                 Id = ToLowerAndReplaceSpecialChars(file),
                 Path = Path.GetDirectoryName(file),
                 Name = Path.GetFileName(file),
-                Extension = Path.GetExtension(file),
+                Ext = new FileInfo(file).Extension,
                 Size = new FileInfo(file).Length,
                 CreatedAtUtc = File.GetCreationTimeUtc(file),
                 UpdatedAtUtc = File.GetLastWriteTimeUtc(file),
                 LastAccessedAtUtc = File.GetLastAccessTimeUtc(file),
+                ScannedAtUtc = DateTime.UtcNow
             };
             document.MetadataGroups = GetMetadata(document);
             yield return document;

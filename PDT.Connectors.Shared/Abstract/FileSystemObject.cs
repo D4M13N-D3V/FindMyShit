@@ -9,4 +9,5 @@ public abstract class FileSystemObject
     public DateTime CreatedAtUtc { get; set; }
     public DateTime UpdatedAtUtc { get; set; }
     public DateTime LastAccessedAtUtc { get; set; }
+    public DateTime ScannedAtUtc { get; set; }
 }

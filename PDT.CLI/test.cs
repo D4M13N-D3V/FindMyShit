@@ -42,17 +42,17 @@ public class test
         
         foreach (var file in _connection.FetchDocuments())
         {
-            // try
-            // {
-            //     using (var stream = file.Open())
-            //     {
-            //         file.Content = ExtractText(stream);
-            //     }
-            // }
-            // catch (Exception e)
-            // {
-            //     
-            // }
+             try
+             { 
+                 using (var stream = file.Open())
+                {
+                    file.Content = ExtractText(stream); 
+                } 
+             }
+             catch (Exception e)
+            {
+                 
+            }
             _meilisearchService.AddDocument(repository.Id, file);
         }
     }

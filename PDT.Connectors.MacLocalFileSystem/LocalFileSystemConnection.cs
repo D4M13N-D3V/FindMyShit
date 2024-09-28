@@ -97,7 +97,7 @@ public class LocalFileSystemConnection:IConnection
             {
                 Id = ToLowerAndReplaceSpecialChars(file),
                 Path = Path.GetDirectoryName(file),
-                Name = Path.GetFileName(file),
+                Name = Path.GetFileNameWithoutExtension(file),
                 Ext = new FileInfo(file).Extension,
                 Size = new FileInfo(file).Length,
                 CreatedAtUtc = File.GetCreationTimeUtc(file),

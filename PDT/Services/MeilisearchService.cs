@@ -16,7 +16,8 @@ public class MeilisearchService
     private readonly ILogger<MeilisearchService> _logger;
     public readonly MeilisearchClient Client;
     private readonly MeiliConfiguration _meiliConfiguration;
-    private ObservableCollection<KeyValuePair<string,FileSystemObject>> _documentCollection;
+    private ObservableCollection<KeyValuePair<string,Document>> _documentCollection;
+    private ObservableCollection<KeyValuePair<string,Folder>> _folderCollection;
     private const int THRESHOLD = 10000; // Define your threshold here
 
     public MeilisearchService(HttpClient httpClient, ILogger<MeilisearchService> logger, MeiliConfiguration meiliConfiguration)
@@ -27,8 +28,10 @@ public class MeilisearchService
         EnsureMeilisearchIsRunning();
         Client = new MeilisearchClient("http://localhost:"+meiliConfiguration.MeiliPort, "kToLWXAc2Qvm7yamYuBNE5DyYFka4koTo0ebGr7nBYo");
         EnsureRepositoryIndexExists();
-        _documentCollection = new ObservableCollection<KeyValuePair<string,FileSystemObject>>();
-        _documentCollection.CollectionChanged += CheckIfNeedSync;
+        _documentCollection = new ObservableCollection<KeyValuePair<string,Document>>();
+        _documentCollection.CollectionChanged += CheckIfNeedDocumentSync;
+        _folderCollection = new ObservableCollection<KeyValuePair<string, Folder>>();
+        _folderCollection.CollectionChanged += CheckIfNeedFolderSync;
     }
 
     private void EnsureMeilisearchIsRunning()
@@ -54,7 +57,7 @@ public class MeilisearchService
 
         var path = Path.Combine(AppContext.BaseDirectory, "meilisearch");
         var args = "--http-addr 127.0.0.1:" + _meiliConfiguration.MeiliPort 
-                    + " --master-key kToLWXAc2Qvm7yamYuBNE5DyYFka4koTo0ebGr7nBYo" 
+                    // + " --master-key kToLWXAc2Qvm7yamYuBNE5DyYFka4koTo0ebGr7nBYo" 
                     + " --env development --db-path " + Path.Combine(AppContext.BaseDirectory, "db");
         var processStartInfo = new ProcessStartInfo
         {
@@ -73,7 +76,7 @@ public class MeilisearchService
     }
     
     
-    private void CheckIfNeedSync(object? sender, NotifyCollectionChangedEventArgs e)
+    private void CheckIfNeedDocumentSync(object? sender, NotifyCollectionChangedEventArgs e)
     {
         if(_documentCollection.Count>=THRESHOLD)
         {
@@ -85,11 +88,49 @@ public class MeilisearchService
                 var repositoryIndex = Client.GetIndexAsync(repository.Key).Result;
                 var documents = _documentCollection.ToList();
                 _documentCollection.Clear();
-                var result = repositoryIndex.AddDocumentsAsync(repository.Value, "id").Result;
+                var result = RetryAsync(() => repositoryIndex.AddDocumentsAsync(repository.Value, "id")).Result;
             }
         }
     }
     
+    private void CheckIfNeedFolderSync(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        if(_folderCollection.Count>=THRESHOLD)
+        {
+            _logger.LogInformation("Threshold reached, syncing metadata to server.");
+            var grouped = _folderCollection.GroupBy(pair => pair.Key)
+                .ToDictionary(group => group.Key, group => group.Select(pair => pair.Value).ToList());
+            foreach (var repository in grouped)
+            {
+                var repositoryIndex = Client.GetIndexAsync(repository.Key).Result;
+                var documents = _folderCollection.ToList();
+                _folderCollection.Clear();
+                var result = RetryAsync(() => repositoryIndex.AddDocumentsAsync(repository.Value, "id")).Result;
+            }
+        }
+    }
+    private async Task<T> RetryAsync<T>(Func<Task<T>> action, int maxRetries = 3, int delayMilliseconds = 1000)
+    {
+        int retryCount = 0;
+        while (true)
+        {
+            try
+            {
+                return await action();
+            }
+            catch (Exception ex)
+            {
+                retryCount++;
+                if (retryCount >= maxRetries)
+                {
+                    _logger.LogError($"Operation failed after {maxRetries} retries: {ex.Message}");
+                    throw;
+                }
+                _logger.LogWarning($"Operation failed, retrying {retryCount}/{maxRetries}...");
+                await Task.Delay(delayMilliseconds);
+            }
+        }
+    }
     private async void EnsureRepositoryIndexExists()
     {
         Task.Delay(5000).Wait();
@@ -105,13 +146,15 @@ public class MeilisearchService
     
     private readonly List<string> FIELDS = new List<string>
     {
-        "ID",
-        "PATH",
-        "CREATEDATUTC",
-        "UPDATEDATUTC",
-        "LASTACCESSEDATUTC",
-        "NAME",
-        "TYPE"
+        "id",
+        "path",
+        "createdAtUtc",
+        "updatedAtUtc",
+        "LastAccessedAtUtc",
+        "name",
+        "type",
+        "ext",
+        "size"
     };
     
     /// <summary>
@@ -177,12 +220,12 @@ public class MeilisearchService
     public void AddDocument(string repositoryId, Document document)
     {
         _logger.LogTrace($"Adding document '{document.Path}{document.Name}.{document.Ext}' to repository '{repositoryId}'...");
-        _documentCollection.Add(new KeyValuePair<string, FileSystemObject>(repositoryId, document));
+        _documentCollection.Add(new KeyValuePair<string, Document>(repositoryId, document));
     }
     public void AddFolder(string repositoryId, Folder folder)
     {
         _logger.LogTrace($"Adding folder '{folder.Path}{folder.Name}' to repository '{repositoryId}'...");
-        _documentCollection.Add(new KeyValuePair<string, FileSystemObject>(repositoryId, folder));
+        _folderCollection.Add(new KeyValuePair<string, Folder>(repositoryId, folder));
     }
 
     public List<string> GetAllIndexes()

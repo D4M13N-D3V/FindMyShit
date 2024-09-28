@@ -95,6 +95,8 @@ Here's the updated roadmap with document tagging and migrations:
 - **[ ] Document Migrations:**
   Implement a migration system for moving documents between repositories, ensuring metadata and indexes are preserved.
 
+- **[ ] Document Sharing:**
+  Implement the ability to send documents to other people who use the software using the wormhole technology. https://github.com/magic-wormhole/magic-wormhole
 ---
 
 ### Monitoring & Performance

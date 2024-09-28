@@ -492,3 +492,4 @@ $RECYCLE.BIN/
 *.lnk
 src/Data443.Api.WebApi.Tests/test-result.xml
 /postgres-data
+PDT/meilisearch

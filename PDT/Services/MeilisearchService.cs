@@ -150,7 +150,7 @@ public class MeilisearchService
         "path",
         "createdAtUtc",
         "updatedAtUtc",
-        "LastAccessedAtUtc",
+        "lastAccessedAtUtc",
         "name",
         "type",
         "ext",
@@ -175,7 +175,6 @@ public class MeilisearchService
         var index = Client.GetIndexAsync(indexName).Result;
         var test = index.GetFilterableAttributesAsync().Result;
         index.UpdateFilterableAttributesAsync(FIELDS).Wait();
-        index.UpdateFilterableAttributesAsync(FIELDS.Select(x=>x.ToLower())).Wait();
     }
 
     /// <summary>

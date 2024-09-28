@@ -82,6 +82,9 @@
     <script src="https://unpkg.com/htmx.org@1.9.12/dist/htmx.min.js"></script>
     <script>
         window.onload = function() {
+
+
+
         document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
         togglePopup();
@@ -102,6 +105,8 @@
             searchInput.setAttribute('hx-get', `http://localhost:7700/indexes/${selectValue}/documents`);
             htmx.process(searchInput);
         });
+
+
             fetch('http://localhost:7700/indexes', {
                 headers: {
                     'Authorization': 'Bearer kToLWXAc2Qvm7yamYuBNE5DyYFka4koTo0ebGr7nBYo'
@@ -123,7 +128,13 @@
             });
 
 // Trigger the search function when the search input changes
-        
+function ticksToDate(ticks) {
+    // Ticks are the number of 100-nanosecond intervals since January 1, 0001 00:00:00 UTC
+    // Subtract the ticks for the Unix epoch, then convert to milliseconds
+    var ticksSinceEpoch = ticks - 621355968000000000;
+    var msSinceEpoch = ticksSinceEpoch / 10000;
+    return new Date(msSinceEpoch);
+}
             document.getElementById('indexSelect').addEventListener('change', function() {
                 const selectValue = this.value;
                 const searchInput = document.getElementById('filter');
@@ -132,15 +143,65 @@
                     processing: true,
                     serverSide: true,
                     searching: false,
+                    drawCallback: function(settings) {
+
+                        document.querySelectorAll('.date').forEach(function(element) {
+                                console.log("asdfdasfasdfasd")
+                            element.addEventListener('mouseover', function() {
+                                console.log("asdfdasfasdfasd")
+                                const time = this.getAttribute('data-time');
+                                const locale = this.getAttribute('data-locale');
+                                this.setAttribute('title', this.textContent);
+                                this.textContent = time;
+                            });
+                            element.addEventListener('mouseout', function() {
+                                console.log("TESTESTSETSET")
+                                const locale = this.getAttribute('data-locale');
+                                this.textContent = locale;
+                            });
+                        });
+                    },
                     columns:[
                         {data: 'path'},
                         {data: 'name'},
                         {data: 'ext'},
                         {data: 'size'},
-                        {data: 'createdAtUtc'},
-                        {data: 'updatedAtUtc'},
-                        {data: 'lastAccessedAtUtc'},
-                        {data: 'scannedAtUtc'}
+                        {data: 'createdAtUtc', render: function(data, type, row) {
+                            if (type === 'display') {
+                                const date = ticksToDate(data);
+                                const time = date.getTime();
+                                const localeString = date.toLocaleString();
+                                return `<span class="date" data-time="${time}" data-locale="${localeString}">${localeString}</span>`;
+                            }
+                            return data;
+                        }},
+                        {data: 'updatedAtUtc', render: function(data, type, row) {
+                            if (type === 'display') {
+                                const date = ticksToDate(data);
+                                const time = date.getTime();
+                                const localeString = date.toLocaleString();
+                                return `<span class="date" data-time="${time}" data-locale="${localeString}">${localeString}</span>`;
+                            }
+                            return data;
+                        }},
+                        {data: 'lastAccessedAtUtc', render: function(data, type, row) {
+                            if (type === 'display') {
+                                const date = ticksToDate(data);
+                                const time = date.getTime();
+                                const localeString = date.toLocaleString();
+                                return `<span class="date" data-time="${time}" data-locale="${localeString}">${localeString}</span>`;
+                            }
+                            return data;
+                        }},
+                        {data: 'scannedAtUtc', render: function(data, type, row) {
+                            if (type === 'display') {
+                                const date = ticksToDate(data);
+                                const time = date.getTime();
+                                const localeString = date.toLocaleString();
+                                return `<span class="date" data-time="${time}" data-locale="${localeString}">${localeString}</span>`;
+                            }
+                            return data;
+                        }}
                     ],
                     ajax: {
                         cache:true,

@@ -180,8 +180,18 @@
                         });
                     },
                     columns: [
-                        { data: 'path' , width: '22%'},
-                        { data: 'name', width: '18%' },
+                        { data: 'path' , width: '22%', render: function (data, type, row) {
+                            if (type === 'display') {
+                                return '<div style="max-width:400px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;" title="'+data+'">' + data + '</div>';
+                            }
+                            return data;
+                        }},
+                        { data: 'name', width: '18%', render: function (data, type, row) {
+                            if (type === 'display') {
+                                return '<div style="max-width:400px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;" title="'+data+'">' + data + '</div>';
+                            }
+                            return data;
+                        } },
                         { data: 'ext', width: '3%' },
                         {
                             data: 'size', render: function (data, type, row) {

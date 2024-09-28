@@ -95,9 +95,9 @@ public class LocalFileSystemConnection:IConnection
             {
                 Id = ToLowerAndReplaceSpecialChars(file),
                 Path = Path.GetDirectoryName(file),
-                FileName = Path.GetFileName(file),
-                FileExtension = Path.GetExtension(file),
-                FileSize = new FileInfo(file).Length,
+                Name = Path.GetFileName(file),
+                Extension = Path.GetExtension(file),
+                Size = new FileInfo(file).Length,
                 CreatedAtUtc = File.GetCreationTimeUtc(file),
                 UpdatedAtUtc = File.GetLastWriteTimeUtc(file),
                 LastAccessedAtUtc = File.GetLastAccessTimeUtc(file),
@@ -113,7 +113,7 @@ public class LocalFileSystemConnection:IConnection
             {
                 Id = "folder-"+ToLowerAndReplaceSpecialChars(folderPath),
                 Path = folderPath,
-                Name = Path.GetDirectoryName(folderPath),
+                Name = Path.GetFileName(folderPath),
                 CreatedAtUtc = Directory.GetCreationTimeUtc(folderPath),
                 UpdatedAtUtc = Directory.GetLastWriteTimeUtc(folderPath),
                 LastAccessedAtUtc = Directory.GetLastAccessTimeUtc(folderPath),

@@ -1,4 +1,4 @@
-# Personal Data Tool
+# Find My Shit
 
 ## Overview
 This project is a C# application designed for indexing personal documents and messages across platforms and devices, making them easily taggable and searchable. It integrates with Meilisearch for indexing, Tika for text extraction, and includes features for migrations and classification.
